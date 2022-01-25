@@ -1,6 +1,8 @@
-package v1
+package api
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/astaxie/beego/validation"
@@ -54,14 +56,41 @@ func GetArticles(c *gin.Context) {
 	})
 }
 
-//新增文章
+// AddArticle 新增文章
 func AddArticle(c *gin.Context) {
 }
 
-//修改文章
+// EditArticle 修改文章
 func EditArticle(c *gin.Context) {
 }
 
-//删除文章
+// DeleteArticle 删除文章
 func DeleteArticle(c *gin.Context) {
+}
+
+// UploadFileAsArticleContext 上传文件作为文章内容
+func UploadFileAsArticleContext(c *gin.Context) {
+
+	code := e.SUCCESS
+	file, err := c.FormFile("testFile")
+	if err != nil {
+		code = e.ERROR_UPLOAD_FILE
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": e.GetMsg(code),
+			"error":   code,
+		})
+		return
+	}
+
+	log.Fatal(file.Filename)
+	c.SaveUploadedFile(file, "./"+file.Filename)
+	s := fmt.Sprintf("%s uploaded successful", file.Filename)
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":  code,
+		"msg":   e.GetMsg(code),
+		"data":  s,
+		"error": "",
+	})
+
 }
