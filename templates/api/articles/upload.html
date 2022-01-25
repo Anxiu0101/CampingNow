@@ -1,0 +1,17 @@
+{{define "api/articles/upload.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload file as article content</title>
+</head>
+<body>
+
+<form action="http://127.0.0.1:8080/api/articles/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="SelectFile">
+
+    <input type="submit" value="Submission">
+</form>
+</body>
+</html>
+{{end}}

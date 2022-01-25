@@ -4,20 +4,17 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 
-	"CampingNow/pkg/setting"
 	articleApi "CampingNow/routers/api"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	r.LoadHTMLGlob("templates/*")
+	r.LoadHTMLGlob("templates/**/**/*")
 
 	r.Use(gin.Logger())
 
 	r.Use(gin.Recovery())
-
-	gin.SetMode(setting.RunMode)
 
 	// 作业代码 2 3
 	test := r.Group("/test")
@@ -82,6 +79,8 @@ func InitRouter() *gin.Engine {
 		api.DELETE("/articles/:id", articleApi.DeleteArticle)
 		// 上传文件作为文章内容
 		api.POST("/articles/upload", articleApi.UploadFileAsArticleContext)
+		// 获取文章内容文件的存储地址
+		api.GET("/articles/address", articleApi.GetArticleContentFileAddress)
 	}
 
 	return r

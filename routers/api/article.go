@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/astaxie/beego/validation"
@@ -68,12 +67,12 @@ func EditArticle(c *gin.Context) {
 func DeleteArticle(c *gin.Context) {
 }
 
-// UploadFileAsArticleContext 上传文件作为文章内容
+// UploadFileAsArticleContext 上传文件作为文章内容, 作业代码 5
 func UploadFileAsArticleContext(c *gin.Context) {
 
 	code := e.SUCCESS
-	file, err := c.FormFile("testFile")
-	if err != nil {
+	file, error := c.FormFile("file")
+	if error != nil {
 		code = e.ERROR_UPLOAD_FILE
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": e.GetMsg(code),
@@ -82,15 +81,29 @@ func UploadFileAsArticleContext(c *gin.Context) {
 		return
 	}
 
-	log.Fatal(file.Filename)
-	c.SaveUploadedFile(file, "./"+file.Filename)
-	s := fmt.Sprintf("%s uploaded successful", file.Filename)
+	err := c.SaveUploadedFile(file, "./data/"+file.Filename)
+	if err != nil {
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":  code,
-		"msg":   e.GetMsg(code),
-		"data":  s,
-		"error": "",
+	address := "127.0.0.1:8000" + "/data/" + file.Filename
+
+	s := fmt.Sprintf("%s uploaded successful", file.Filename)
+	c.HTML(http.StatusOK, "api/articles/upload.html", gin.H{
+		"code": code,
+		"msg":  s,
+		"data": file,
 	})
+	c.JSON(http.StatusOK, gin.H{
+		"code":    code,
+		"msg":     s,
+		"data":    file,
+		"address": address,
+	})
+
+}
+
+// GetArticleContentFileAddress 获取文章内容文件的地址
+func GetArticleContentFileAddress(c *gin.Context) {
 
 }

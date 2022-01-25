@@ -1,11 +1,11 @@
 package main
 
 import (
-	"CampingNow/routers"
 	"fmt"
 	"net/http"
 
 	"CampingNow/pkg/setting"
+	"CampingNow/routers"
 )
 
 func main() {
