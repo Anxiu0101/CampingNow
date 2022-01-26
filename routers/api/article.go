@@ -48,6 +48,7 @@ func GetArticle(c *gin.Context) {
 func GetArticles(c *gin.Context) {
 
 	code := e.SUCCESS
+	fmt.Println("The data from database pour into the data and return in JSON")
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":  code,
@@ -105,7 +106,7 @@ func UploadFileAsArticleContext(c *gin.Context) {
 
 }
 
-// GetArticleContentFileAddress 获取文章内容文件的地址
+// GetArticleContentFileAddress 获取文章内容文件的地址, 作业代码 6
 func GetArticleContentFileAddress(c *gin.Context) {
 	filename := c.Query("filename")
 
