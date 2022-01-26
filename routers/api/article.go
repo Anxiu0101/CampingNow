@@ -19,6 +19,15 @@ func GetArticle(c *gin.Context) {
 	valid.Min(id, 1, "id").Message("ID必须大于0")
 
 	code := e.SUCCESS
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":  code,
+		"msg":   e.GetMsg(code),
+		"data":  "response success",
+		"error": "",
+	})
+
+	// 煎鱼文档的代码，需要使用 gorm v2 实现 GetArticle 方法，位置在 JSON 前
 	//code := e.INVALID_PARAMS
 	//var data interface{}
 	//if !valid.HasErrors() {
@@ -33,13 +42,6 @@ func GetArticle(c *gin.Context) {
 	//		log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
 	//	}
 	//}
-
-	c.JSON(http.StatusOK, gin.H{
-		"code":  code,
-		"msg":   e.GetMsg(code),
-		"data":  "response success",
-		"error": "",
-	})
 }
 
 // GetArticles 获取多个文章, 作业代码 4
@@ -105,5 +107,16 @@ func UploadFileAsArticleContext(c *gin.Context) {
 
 // GetArticleContentFileAddress 获取文章内容文件的地址
 func GetArticleContentFileAddress(c *gin.Context) {
+	filename := c.Query("filename")
+
+	reqIP := c.ClientIP()
+	if reqIP == "::1" {
+		reqIP = "127.0.0.1"
+	}
+	address := reqIP + ":" + "8000/" + "data/" + filename
+
+	c.JSON(http.StatusOK, gin.H{
+		"address": address,
+	})
 
 }

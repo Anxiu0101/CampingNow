@@ -64,7 +64,7 @@ func InitRouter() *gin.Engine {
 		})
 	}
 
-	// Articles api, 作业代码 4
+	// Articles api, 作业代码 4 5 6
 	api := r.Group("/api")
 	{
 		// 获取文章列表

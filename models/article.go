@@ -11,17 +11,6 @@ type Article struct {
 	State   int    `json:"state"`
 }
 
-// articles slice to seed record Article data.
-var articles = []Article{
-	{
-		Model:   Model{ID: 1},
-		Title:   "TestArticle1",
-		Desc:    "It is a test article",
-		Content: "",
-		State:   1,
-	},
-}
-
 // 煎鱼的文档代码，使用 gorm v1，需要用 gorm v2 重构
 //func ExistArticleByID(id int) bool {
 //	var article Article
