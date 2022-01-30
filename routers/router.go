@@ -2,9 +2,10 @@ package routers
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 
-	articleApi "CampingNow/routers/api"
+	apiv1 "CampingNow/routers/api/v1"
 )
 
 func InitRouter() *gin.Engine {
@@ -68,19 +69,24 @@ func InitRouter() *gin.Engine {
 	api := r.Group("/api")
 	{
 		// 获取文章列表
-		api.GET("/articles", articleApi.GetArticles)
+		api.GET("/articles", apiv1.GetArticles)
 		// 获取指定文章
-		api.GET("/articles/:id", articleApi.GetArticle)
+		api.GET("/articles/:id", apiv1.GetArticle)
 		// 新建文章
-		api.POST("/articles", articleApi.AddArticle)
+		api.POST("/articles", apiv1.AddArticle)
 		// 更新指定文章
-		api.PUT("/articles/:id", articleApi.EditArticle)
+		api.PUT("/articles/:id", apiv1.EditArticle)
 		// 删除指定文章
-		api.DELETE("/articles/:id", articleApi.DeleteArticle)
+		api.DELETE("/articles/:id", apiv1.DeleteArticle)
 		// 上传文件作为文章内容
-		api.POST("/articles/upload", articleApi.UploadFileAsArticleContext)
+		api.POST("/articles/upload", apiv1.UploadFileAsArticleContext)
 		// 获取文章内容文件的存储地址
-		api.GET("/articles/address", articleApi.GetArticleContentFileAddress)
+		api.GET("/articles/address", apiv1.GetArticleContentFileAddress)
+	}
+
+	login := r.Group("/login")
+	{
+		login.GET("/", apiv1.MemberLogin)
 	}
 
 	return r
