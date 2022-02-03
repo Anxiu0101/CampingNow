@@ -5,7 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	apiv1 "CampingNow/routers/api/v1"
+	mainApi "CampingNow/routers/api"
+	apiV1 "CampingNow/routers/api/v1"
 )
 
 func InitRouter() *gin.Engine {
@@ -69,24 +70,28 @@ func InitRouter() *gin.Engine {
 	api := r.Group("/api")
 	{
 		// 获取文章列表
-		api.GET("/articles", apiv1.GetArticles)
+		api.GET("/articles", apiV1.GetArticles)
 		// 获取指定文章
-		api.GET("/articles/:id", apiv1.GetArticle)
+		api.GET("/articles/:id", apiV1.GetArticle)
 		// 新建文章
-		api.POST("/articles", apiv1.AddArticle)
+		api.POST("/articles", apiV1.AddArticle)
 		// 更新指定文章
-		api.PUT("/articles/:id", apiv1.EditArticle)
+		api.PUT("/articles/:id", apiV1.EditArticle)
 		// 删除指定文章
-		api.DELETE("/articles/:id", apiv1.DeleteArticle)
+		api.DELETE("/articles/:id", apiV1.DeleteArticle)
 		// 上传文件作为文章内容
-		api.POST("/articles/upload", apiv1.UploadFileAsArticleContext)
+		api.POST("/articles/upload", apiV1.UploadFileAsArticleContext)
 		// 获取文章内容文件的存储地址
-		api.GET("/articles/address", apiv1.GetArticleContentFileAddress)
+		api.GET("/articles/address", apiV1.GetArticleContentFileAddress)
 	}
 
-	login := r.Group("/login")
+	member := r.Group("/member")
+	//member.Use(jwt.JWT())
 	{
-		login.GET("/", apiv1.MemberLogin)
+		// 用户登录
+		member.GET("/login", mainApi.MemberLogin)
+		// 用户个人主页
+		member.GET("/space")
 	}
 
 	return r
