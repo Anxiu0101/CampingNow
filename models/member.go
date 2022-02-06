@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Member struct {
 	Model `gorm:"embedded"`
@@ -29,4 +31,5 @@ func RegisterMember(username, password string) {
 		},
 	}
 	db.Create(&member)
+
 }

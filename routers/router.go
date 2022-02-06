@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	mainApi "CampingNow/routers/api"
+	eventApi "CampingNow/routers/api/event"
 	apiV1 "CampingNow/routers/api/v1"
 )
 
@@ -97,15 +98,23 @@ func InitRouter() *gin.Engine {
 		member.POST("/register", mainApi.RegisterMember)
 		// 用户个人主页
 		member.GET("/space")
+
+		// 备忘录功能
+		event := r.Group("/member")
+		{
+			event.GET("/events", eventApi.GetEvents)
+			event.GET("/events/:id", eventApi.GetEvent)
+			event.POST("/events")
+		}
 	}
 
-	// 加载404错误页面
-	r.NoRoute(func(c *gin.Context) {
-		// 实现内部重定向
-		c.HTML(http.StatusOK, "404.html", gin.H{
-			"msg": "404",
-		})
-	})
+	//// 加载404错误页面
+	//r.NoRoute(func(c *gin.Context) {
+	//	// 实现内部重定向
+	//	c.HTML(http.StatusOK, "404.html", gin.H{
+	//		"msg": "404",
+	//	})
+	//})
 
 	return r
 }
