@@ -2,12 +2,11 @@ package models
 
 import (
 	"fmt"
+	"gorm.io/driver/mysql"
+	gorm "gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
-
-	"gorm.io/driver/mysql"
-	gorm "gorm.io/gorm"
 
 	"CampingNow/pkg/setting"
 )
@@ -16,8 +15,8 @@ var db *gorm.DB
 
 type Model struct {
 	ID        uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt int64          `json:"created_at"`
-	UpdatedAt int64          `json:"updated_at"`
+	CreatedAt int64          `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt int64          `gorm:"autoCreateTime" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 }
 

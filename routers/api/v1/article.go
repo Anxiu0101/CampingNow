@@ -4,57 +4,62 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 
+	"CampingNow/models"
 	"CampingNow/pkg/e"
+	"CampingNow/pkg/setting"
+	"CampingNow/pkg/util"
 )
 
 // GetArticle 获取单个文章
 func GetArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
-	valid := validation.Validation{}
-	valid.Min(id, 1, "id").Message("ID必须大于0")
-
-	code := e.SUCCESS
+	code := e.INVALID_PARAMS
+	var data interface{}
+	if models.ExistArticleByID(id) {
+		data = models.GetArticle(id)
+		code = e.SUCCESS
+	} else {
+		code = e.ERROR_NOT_EXIST_ARTICLE
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":  code,
-		"msg":   e.GetMsg(code),
-		"data":  "response success",
-		"error": "",
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": data,
 	})
-
-	// 煎鱼文档的代码，需要使用 gorm v2 实现 GetArticle 方法，位置在 JSON 前
-	//code := e.INVALID_PARAMS
-	//var data interface{}
-	//if !valid.HasErrors() {
-	//	if models.ExistArticleByID(id) {
-	//		data = models.GetArticle(id)
-	//		code = e.SUCCESS
-	//	} else {
-	//		code = e.ERROR_NOT_EXIST_ARTICLE
-	//	}
-	//} else {
-	//	for _, err := range valid.Errors {
-	//		log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
-	//	}
-	//}
 }
 
 // GetArticles 获取多个文章, 作业代码 4
 func GetArticles(c *gin.Context) {
 
+	data := make(map[string]interface{})
+	maps := make(map[string]interface{})
+
+	var state int = -1
+	if arg := c.Query("state"); arg != "" {
+		state = com.StrTo(arg).MustInt()
+		maps["state"] = state
+	}
+
+	var authId int = -1
+	if arg := c.Query("auth_id"); arg != "" {
+		authId = com.StrTo(arg).MustInt()
+		maps["auth_id"] = authId
+	}
+
 	code := e.SUCCESS
-	fmt.Println("The data from database pour into the data and return in JSON")
+
+	data["lists"] = models.GetArticles(util.GetPage(c), setting.PageSize, maps)
+	data["total"] = models.GetArticleTotal(maps)
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":  code,
-		"msg":   e.GetMsg(code),
-		"data":  "response success",
-		"error": "",
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": data,
 	})
 }
 

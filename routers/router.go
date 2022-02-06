@@ -1,8 +1,7 @@
 package routers
 
 import (
-	"fmt"
-
+	"CampingNow/middleware/jwt"
 	"github.com/gin-gonic/gin"
 
 	mainApi "CampingNow/routers/api"
@@ -19,55 +18,56 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	// 作业代码 2 3
-	test := r.Group("/test")
-	{
-		// 2
-		test.GET("/test", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"status": 200,
-				"data":   "response success",
-				"msg":    "ok",
-				"error":  "",
-			})
-		})
+	//test := r.Group("/test")
+	//{
+	//	// 2
+	//	test.GET("/test", func(c *gin.Context) {
+	//		c.JSON(200, gin.H{
+	//			"status": 200,
+	//			"data":   "response success",
+	//			"msg":    "ok",
+	//			"error":  "",
+	//		})
+	//	})
+	//
+	//	// 3
+	//	test.POST("/test", func(c *gin.Context) {
+	//		fmt.Print("Write new data into database")
+	//
+	//		c.JSON(200, gin.H{
+	//			"status": 200,
+	//			"data":   "response success",
+	//			"msg":    "ok",
+	//			"error":  "",
+	//		})
+	//	})
+	//
+	//	// 3
+	//	test.DELETE("/test", func(c *gin.Context) {
+	//		fmt.Print("Delete data from database")
+	//
+	//		c.JSON(200, gin.H{
+	//			"status": 200,
+	//			"data":   "response success",
+	//			"msg":    "ok",
+	//			"error":  "",
+	//		})
+	//	})
+	//
+	//	// 3
+	//	test.PUT("/test", func(c *gin.Context) {
+	//		c.JSON(200, gin.H{
+	//			"status": 200,
+	//			"data":   "response success",
+	//			"msg":    "ok",
+	//			"error":  "",
+	//		})
+	//	})
+	//}
 
-		// 3
-		test.POST("/test", func(c *gin.Context) {
-			fmt.Print("Write new data into database")
-
-			c.JSON(200, gin.H{
-				"status": 200,
-				"data":   "response success",
-				"msg":    "ok",
-				"error":  "",
-			})
-		})
-
-		// 3
-		test.DELETE("/test", func(c *gin.Context) {
-			fmt.Print("Delete data from database")
-
-			c.JSON(200, gin.H{
-				"status": 200,
-				"data":   "response success",
-				"msg":    "ok",
-				"error":  "",
-			})
-		})
-
-		// 3
-		test.PUT("/test", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"status": 200,
-				"data":   "response success",
-				"msg":    "ok",
-				"error":  "",
-			})
-		})
-	}
-
-	// Articles api, 作业代码 4 5 6
+	//Articles api, 作业代码 4 5 6
 	api := r.Group("/api")
+	api.Use(jwt.JWT())
 	{
 		// 获取文章列表
 		api.GET("/articles", apiV1.GetArticles)
@@ -86,10 +86,11 @@ func InitRouter() *gin.Engine {
 	}
 
 	member := r.Group("/member")
-	//member.Use(jwt.JWT())
 	{
 		// 用户登录
 		member.GET("/login", mainApi.MemberLogin)
+		// 用户注册
+		member.POST("/register", mainApi.RegisterMember)
 		// 用户个人主页
 		member.GET("/space")
 	}
