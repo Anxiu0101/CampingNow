@@ -97,7 +97,7 @@ func UploadFileAsArticleContext(c *gin.Context) {
 	address := "127.0.0.1:8000" + "/data/" + file.Filename
 
 	s := fmt.Sprintf("%s uploaded successful", file.Filename)
-	c.HTML(http.StatusOK, "api/articles/upload.html", gin.H{
+	c.HTML(http.StatusOK, "upload.html", gin.H{
 		"code": code,
 		"msg":  s,
 		"data": file,

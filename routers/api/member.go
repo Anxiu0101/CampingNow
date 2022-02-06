@@ -49,10 +49,12 @@ func RegisterMember(c *gin.Context) {
 	if !isExist {
 		code = e.SUCCESS
 		models.RegisterMember(username, password)
+		c.Request.URL.Path = "./space"
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"msg":  e.GetMsg(code),
+		"data": "Welcome to be a member of CampingNow!",
 	})
 
 }

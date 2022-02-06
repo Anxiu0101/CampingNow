@@ -2,7 +2,9 @@ package routers
 
 import (
 	"CampingNow/middleware/jwt"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 
 	mainApi "CampingNow/routers/api"
 	apiV1 "CampingNow/routers/api/v1"
@@ -11,59 +13,61 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	r.LoadHTMLGlob("templates/**/**/*")
+	// 加载静态资源和模板文件
+	r.StaticFS("/static", http.Dir("./static"))
+	r.LoadHTMLGlob("templates/**/*.html")
 
 	r.Use(gin.Logger())
 
 	r.Use(gin.Recovery())
 
 	// 作业代码 2 3
-	//test := r.Group("/test")
-	//{
-	//	// 2
-	//	test.GET("/test", func(c *gin.Context) {
-	//		c.JSON(200, gin.H{
-	//			"status": 200,
-	//			"data":   "response success",
-	//			"msg":    "ok",
-	//			"error":  "",
-	//		})
-	//	})
-	//
-	//	// 3
-	//	test.POST("/test", func(c *gin.Context) {
-	//		fmt.Print("Write new data into database")
-	//
-	//		c.JSON(200, gin.H{
-	//			"status": 200,
-	//			"data":   "response success",
-	//			"msg":    "ok",
-	//			"error":  "",
-	//		})
-	//	})
-	//
-	//	// 3
-	//	test.DELETE("/test", func(c *gin.Context) {
-	//		fmt.Print("Delete data from database")
-	//
-	//		c.JSON(200, gin.H{
-	//			"status": 200,
-	//			"data":   "response success",
-	//			"msg":    "ok",
-	//			"error":  "",
-	//		})
-	//	})
-	//
-	//	// 3
-	//	test.PUT("/test", func(c *gin.Context) {
-	//		c.JSON(200, gin.H{
-	//			"status": 200,
-	//			"data":   "response success",
-	//			"msg":    "ok",
-	//			"error":  "",
-	//		})
-	//	})
-	//}
+	test := r.Group("/test")
+	{
+		// 2
+		test.GET("/test", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"status": 200,
+				"data":   "response success",
+				"msg":    "ok",
+				"error":  "",
+			})
+		})
+
+		// 3
+		test.POST("/test", func(c *gin.Context) {
+			fmt.Print("Write new data into database")
+
+			c.JSON(200, gin.H{
+				"status": 200,
+				"data":   "response success",
+				"msg":    "ok",
+				"error":  "",
+			})
+		})
+
+		// 3
+		test.DELETE("/test", func(c *gin.Context) {
+			fmt.Print("Delete data from database")
+
+			c.JSON(200, gin.H{
+				"status": 200,
+				"data":   "response success",
+				"msg":    "ok",
+				"error":  "",
+			})
+		})
+
+		// 3
+		test.PUT("/test", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"status": 200,
+				"data":   "response success",
+				"msg":    "ok",
+				"error":  "",
+			})
+		})
+	}
 
 	//Articles api, 作业代码 4 5 6
 	api := r.Group("/api")
@@ -94,6 +98,14 @@ func InitRouter() *gin.Engine {
 		// 用户个人主页
 		member.GET("/space")
 	}
+
+	// 加载404错误页面
+	r.NoRoute(func(c *gin.Context) {
+		// 实现内部重定向
+		c.HTML(http.StatusOK, "404.html", gin.H{
+			"msg": "404",
+		})
+	})
 
 	return r
 }
