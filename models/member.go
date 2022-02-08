@@ -12,6 +12,18 @@ type Member struct {
 	Email    string `gorm:"index" json:"email"`
 }
 
+func ExistMemberByID(id int) bool {
+
+	var member Member
+	db.Select("id").Where("id = ?", id).First(&member)
+	if member.ID > 0 {
+		return true
+	}
+
+	return false
+
+}
+
 func CheckMember(username, password string) bool {
 	var member Member
 	db.Select("id").Where(Member{Username: username, Password: password}).First(&member)
@@ -32,4 +44,10 @@ func RegisterMember(username, password string) {
 	}
 	db.Create(&member)
 
+}
+
+func ResetPassword(username, newPassword string) bool {
+	db.Model(&Member{}).Where("username = ?", username).Update("password", newPassword)
+
+	return true
 }

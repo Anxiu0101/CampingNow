@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Event struct {
 	Model `gorm:"embedded"`
@@ -10,12 +12,12 @@ type Event struct {
 	MemberID int    `json:"member_id"`
 	Member   Member `json:"member" gorm:"foreignKey:MemberID"`
 
-	Type      int       `json:"type"`
-	Status    int       `json:"status"`
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-	Content   string    `json:"content"`
-	Views     int       `json:"views"`
+	Type      int    `json:"type"`
+	Status    int    `json:"status"`
+	StartTime int64  `json:"start_time"`
+	EndTime   int64  `json:"end_time"`
+	Content   string `json:"content"`
+	Views     int    `json:"views"`
 }
 
 // 使用枚举定义备忘事件的类型和状态
@@ -31,26 +33,26 @@ const (
 	typeMeeting    = 204
 )
 
-var MsgFields = map[int]string{
-	statusDoing:    "事件进行中",
-	statusFinished: "事件已完成",
-	statusTimeOut:  "事件已超时",
-	statusDelay:    "事件已延迟",
+var MsgFields = map[string]int{
+	"事件进行中": statusDoing,
+	"事件已完成": statusFinished,
+	"事件已超时": statusTimeOut,
+	"事件已延迟": statusDelay,
 
-	typeBirthday:   "生日",
-	typeWorking:    "工作",
-	typeAssignment: "任务",
-	typeMeeting:    "会议",
+	"生日": typeBirthday,
+	"工作": typeWorking,
+	"任务": typeAssignment,
+	"会议": typeMeeting,
 }
 
-// GetMsg 获取备忘事件枚举字段的函数
-func GetMsg(code int) string {
-	msg, ok := MsgFields[code]
+// GetCode 获取备忘事件枚举字段的函数
+func GetCode(msg string) int {
+	code, ok := MsgFields[msg]
 	if ok {
-		return msg
+		return code
 	}
 
-	return "Not Exist Event Type Or Status"
+	return -1
 }
 
 func ExistEventByID(id int) bool {
@@ -65,8 +67,8 @@ func ExistEventByID(id int) bool {
 
 }
 
-func GetEvent(maps interface{}) (id int) {
-	db.Model(&Event{}).Where("id = ?", id)
+func GetEvent(id int) (event Event) {
+	db.Preload("Member").Where("id = ?", id).First(&event)
 
 	return
 }
@@ -90,15 +92,16 @@ func EditEvent(id int, data interface{}) bool {
 }
 
 func AddEvent(data map[string]interface{}) bool {
+
 	db.Create(&Event{
 		Title:     data["title"].(string),
-		Member:    data["member"].(Member),
-		Type:      data["type"].(int),
-		Status:    data["status"].(int),
-		StartTime: data["start_time"].(time.Time),
-		EndTime:   data["end_time"].(time.Time),
+		MemberID:  data["member_id"].(int),
+		Type:      GetCode(data["type"].(string)),
+		Status:    GetCode(data["status"].(string)),
+		StartTime: time.Now().Unix(),
+		EndTime:   data["end_time"].(int64),
 		Content:   data["content"].(string),
-		Views:     data["views"].(int),
+		Views:     0,
 	})
 
 	return true

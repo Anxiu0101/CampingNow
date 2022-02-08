@@ -92,29 +92,36 @@ func InitRouter() *gin.Engine {
 
 	member := r.Group("/member")
 	{
+		/* 用户相关功能 */
 		// 用户登录
 		member.GET("/login", mainApi.MemberLogin)
 		// 用户注册
 		member.POST("/register", mainApi.RegisterMember)
+		// 修改用户密码
+		member.PUT("/space", mainApi.ResetMemberPassword)
 		// 用户个人主页
-		member.GET("/space")
+		member.GET("/space", mainApi.GetMemberSpace)
 
-		// 备忘录功能
-		event := r.Group("/member")
-		{
-			event.GET("/events", eventApi.GetEvents)
-			event.GET("/events/:id", eventApi.GetEvent)
-			event.POST("/events")
-		}
+		/* 备忘录功能 */
+		// 获取备忘事件列表
+		member.GET("/events", eventApi.GetEvents)
+		// 获取指定备忘事件
+		member.GET("/events/:id", eventApi.GetEvent)
+		// 更新备忘事件信息
+		member.PUT("/events/:id")
+		// 创建新备忘事件
+		member.POST("/events", eventApi.AddEvents)
+		// 删除指定备忘事件
+		member.DELETE("events/:id")
 	}
 
-	//// 加载404错误页面
-	//r.NoRoute(func(c *gin.Context) {
-	//	// 实现内部重定向
-	//	c.HTML(http.StatusOK, "404.html", gin.H{
-	//		"msg": "404",
-	//	})
-	//})
+	// 加载404错误页面
+	r.NoRoute(func(c *gin.Context) {
+		// 实现内部重定向
+		c.HTML(http.StatusNotFound, "404.html", gin.H{
+			"msg": "404",
+		})
+	})
 
 	return r
 }

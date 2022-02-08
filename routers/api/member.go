@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -57,6 +58,27 @@ func RegisterMember(c *gin.Context) {
 		"data": "Welcome to be a member of CampingNow!",
 	})
 
+}
+
+func ResetMemberPassword(c *gin.Context) {
+
+	username := c.Query("username")
+	oldPassword := c.Query("oldpassword")
+	newPassword := c.Query("newpassword")
+
+	code := e.INVALID_PARAMS
+	isExist := models.CheckMember(username, oldPassword)
+	fmt.Print(isExist)
+	if isExist {
+		code = e.SUCCESS
+		models.ResetPassword(username, newPassword)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": "Successful reset your password",
+	})
 }
 
 func GetMemberSpace(c *gin.Context) {
