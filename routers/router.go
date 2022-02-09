@@ -108,11 +108,11 @@ func InitRouter() *gin.Engine {
 		// 获取指定备忘事件
 		member.GET("/events/:id", eventApi.GetEvent)
 		// 更新备忘事件信息
-		member.PUT("/events/:id")
+		member.PUT("/events/:id", eventApi.EditEventByID)
 		// 创建新备忘事件
 		member.POST("/events", eventApi.AddEvents)
 		// 删除指定备忘事件
-		member.DELETE("events/:id")
+		member.DELETE("events/:id", eventApi.DeleteEvent)
 	}
 
 	// 加载404错误页面

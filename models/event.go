@@ -108,7 +108,7 @@ func AddEvent(data map[string]interface{}) bool {
 }
 
 func DeleteEvent(id int) bool {
-	db.Where("id = ?", id).Delete(Event{})
+	db.Where("id = ?", id).Delete(&Event{})
 
 	return true
 }

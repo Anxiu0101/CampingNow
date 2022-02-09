@@ -35,7 +35,7 @@ func GetEvent(c *gin.Context) {
 	})
 }
 
-// GetEvents 获取事件列表
+// GetEvents 获取备忘事件列表
 func GetEvents(c *gin.Context) {
 
 	data := make(map[string]interface{})
@@ -59,6 +59,45 @@ func GetEvents(c *gin.Context) {
 	})
 }
 
+// EditEventByID 更新单个备忘事件信息
+func EditEventByID(c *gin.Context) {
+
+	id := com.StrTo(c.Param("id")).MustInt()
+	title := c.Query("title")
+	memberID := com.StrTo(c.Query("member_id")).MustInt()
+	eventType := c.Query("type")
+	status := c.Query("status")
+	endTime := c.Query("end_time")
+	content := c.Query("content")
+
+	/* Validation */
+	code := e.INVALID_PARAMS
+	if models.ExistEventByID(id) {
+		if models.ExistMemberByID(id) {
+			data := make(map[string]interface{})
+			data["member_id"] = memberID
+			data["title"] = title
+			data["type"] = eventType
+			data["status"] = status
+			data["end_time"] = endTime
+			data["content"] = content
+			models.EditEvent(id, data)
+			code = e.SUCCESS
+		} else {
+			code = e.ERROR_NOT_EXIST_MEMBER
+		}
+	} else {
+		code = e.ERROR_NOT_EXIST_EVENT
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": make(map[string]string),
+	})
+}
+
+// AddEvents 创建新备忘事件
 func AddEvents(c *gin.Context) {
 
 	// 从上下文中获取新备忘事件的信息
@@ -99,4 +138,24 @@ func AddEvents(c *gin.Context) {
 		"data": make(map[string]interface{}),
 	})
 
+}
+
+// DeleteEvent 删除指定文章
+func DeleteEvent(c *gin.Context) {
+	id := com.StrTo(c.Param("id")).MustInt()
+
+	/* Validation */
+	code := e.INVALID_PARAMS
+	if models.ExistEventByID(id) {
+		models.DeleteEvent(id)
+		code = e.SUCCESS
+	} else {
+		code = e.ERROR_NOT_EXIST_ARTICLE
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": "Successful delete this event",
+	})
 }
