@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -81,6 +82,24 @@ func GetEvents(pageNum int, pageSize int, maps interface{}) (event []Event) {
 
 func GetEventTotal(maps interface{}) (count int64) {
 	db.Model(&Event{}).Where(maps).Count(&count)
+
+	return
+}
+
+func GetEventByStatus(status int, pageNum int, pageSize int) (event []Event) {
+	db.Model(Event{}).Where("status = ?", status).Offset(pageNum).Limit(pageSize).Find(&event)
+
+	return
+}
+
+func GetEventByType(types int, pageNum int, pageSize int) (event []Event) {
+	db.Model(Event{}).Where("status = ?", types).Offset(pageNum).Limit(pageSize).Find(&event)
+
+	return
+}
+
+func AddEventViews(id int) {
+	db.Model(Event{}).Where("id = ? ", id).Update("views", gorm.Expr("views+ ?", 1))
 
 	return
 }

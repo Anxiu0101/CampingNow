@@ -1,7 +1,6 @@
 package event
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,6 +22,7 @@ func GetEvent(c *gin.Context) {
 	var data interface{}
 	if models.ExistEventByID(id) {
 		data = models.GetEvent(id)
+		models.AddEventViews(id)
 		code = e.SUCCESS
 	} else {
 		code = e.ERROR_NOT_EXIST_EVENT
@@ -41,7 +41,7 @@ func GetEvents(c *gin.Context) {
 	data := make(map[string]interface{})
 	maps := make(map[string]interface{})
 
-	var memberId int = -1
+	memberId := -1
 	if arg := c.Query("member_id"); arg != "" {
 		memberId = com.StrTo(arg).MustInt()
 		maps["member_id"] = memberId
@@ -59,6 +59,54 @@ func GetEvents(c *gin.Context) {
 	})
 }
 
+// GetEventByStatus 通过状态码和类型码获取对应事件列表，如 待办事件 可以通过 101 获取
+func GetEventByStatus(c *gin.Context) {
+
+	status, err := strconv.Atoi(c.Query("status"))
+	code := e.ERROR
+	data := make(map[string]interface{})
+
+	// 检查数据
+	if status < 200 && status > 100 {
+		data["lists"] = models.GetEventByStatus(status, util.GetPage(c), setting.PageSize)
+
+		code = e.SUCCESS
+	} else {
+		code = e.INVALID_PARAMS
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":  code,
+		"msg":   e.GetMsg(code),
+		"data":  data,
+		"error": err,
+	})
+}
+
+// GetEventByType 通过类型码获取对应事件列表，如 任务 可以通过 203 获取
+func GetEventByType(c *gin.Context) {
+
+	types, err := strconv.Atoi(c.Query("types"))
+	data := make(map[string]interface{})
+	code := e.ERROR
+
+	// 检查数据
+	if types < 300 && types > 200 {
+		data["lists"] = models.GetEventByType(types, 10, 1)
+
+		code = e.SUCCESS
+	} else {
+		code = e.INVALID_PARAMS
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":  code,
+		"msg":   e.GetMsg(code),
+		"data":  data,
+		"error": err,
+	})
+}
+
 // EditEventByID 更新单个备忘事件信息
 func EditEventByID(c *gin.Context) {
 
@@ -71,6 +119,9 @@ func EditEventByID(c *gin.Context) {
 	content := c.Query("content")
 
 	/* Validation */
+	temp, _ := strconv.Atoi(endTime)
+	eTime, _ := time.ParseDuration(strconv.Itoa(24*temp) + "h")
+
 	code := e.INVALID_PARAMS
 	if models.ExistEventByID(id) {
 		if models.ExistMemberByID(id) {
@@ -79,7 +130,7 @@ func EditEventByID(c *gin.Context) {
 			data["title"] = title
 			data["type"] = eventType
 			data["status"] = status
-			data["end_time"] = endTime
+			data["end_time"] = time.Now().Add(eTime).Unix()
 			data["content"] = content
 			models.EditEvent(id, data)
 			code = e.SUCCESS
@@ -111,7 +162,6 @@ func AddEvents(c *gin.Context) {
 	/* Validation of input para */
 	temp, _ := strconv.Atoi(endTime)
 	eTime, _ := time.ParseDuration(strconv.Itoa(24*temp) + "h")
-	fmt.Print(eTime)
 	code := e.INVALID_PARAMS
 
 	if models.ExistMemberByID(memberID) {

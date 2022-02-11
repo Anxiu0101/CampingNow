@@ -2,12 +2,12 @@ package routers
 
 import (
 	"CampingNow/middleware/jwt"
+	eventApi "CampingNow/routers/api/event"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 
 	mainApi "CampingNow/routers/api"
-	eventApi "CampingNow/routers/api/event"
 	apiV1 "CampingNow/routers/api/v1"
 )
 
@@ -103,16 +103,24 @@ func InitRouter() *gin.Engine {
 		member.GET("/space", mainApi.GetMemberSpace)
 
 		/* 备忘录功能 */
-		// 获取备忘事件列表
-		member.GET("/events", eventApi.GetEvents)
-		// 获取指定备忘事件
-		member.GET("/events/:id", eventApi.GetEvent)
-		// 更新备忘事件信息
-		member.PUT("/events/:id", eventApi.EditEventByID)
-		// 创建新备忘事件
-		member.POST("/events", eventApi.AddEvents)
-		// 删除指定备忘事件
-		member.DELETE("events/:id", eventApi.DeleteEvent)
+		event := r.Group("/member")
+		event.Use(jwt.JWT())
+		{
+			// 获取备忘事件列表
+			event.GET("/events", eventApi.GetEvents)
+			// 获取特定状态备忘事件列表 如 101 为 事件进行中
+			event.GET("/events/status", eventApi.GetEventByStatus)
+			// 获取特定类型备忘录事件列表 如 201 为 生日
+			event.GET("/events/type", eventApi.GetEventByType)
+			// 获取指定备忘事件
+			event.GET("/events/:id", eventApi.GetEvent)
+			// 更新备忘事件信息
+			event.PUT("/events/:id", eventApi.EditEventByID)
+			// 创建新备忘事件
+			event.POST("/events", eventApi.AddEvents)
+			// 删除指定备忘事件
+			event.DELETE("/events/:id", eventApi.DeleteEvent)
+		}
 	}
 
 	// 加载404错误页面

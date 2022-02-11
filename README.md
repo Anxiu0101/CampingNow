@@ -76,20 +76,26 @@ http://127.0.0.1:8000/api/articles/address?filename=textFile.txt
 
 ## Structure
 
-- ==[[conf]]==: 用于存储配置文件
+- conf: 用于存储配置文件
   
-- ==data==
+- data
 
-- ==log==
+- log
   
-- ==models==: 应用数据库模型
+- models: 应用数据库模型
   
-- ==[[pkg]]==: 第三方包
+- pkg: 第三方包
   
-- ==routers==: 路由逻辑处理
+- routers: 路由逻辑处理
   
-- ==static==: 
+- static: 
 
-- ==templates==: 模板文件, `.gohtml`
+- templates: 模板文件, `.gohtml`
 
 [[go 项目一般项目结构]] 
+
+## Event 备忘录功能
+
+#### Test document by postman
+
+[Test Docu](https://documenter.getpostman.com/view/16949749/UVeJLkiy)
